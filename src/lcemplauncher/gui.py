@@ -199,7 +199,7 @@ class LauncherGUI:
                 messagebox.showerror("Error", f"Failed to create instance: {str(e)}")
                 logger.error(f"Failed to create instance {name}: {e}")
 
-        ttk.Button(dialog, text="Erstellen", command=create).pack(pady=10)
+        ttk.Button(dialog, text="Create", command=create).pack(pady=10)
 
     def install_selected(self) -> None:
         """
