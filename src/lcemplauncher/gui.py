@@ -178,7 +178,7 @@ class LauncherGUI:
         """
         dialog = tk.Toplevel(self.root)
         dialog.title("New Instance")
-        dialog.geometry("300x100")
+        dialog.geometry("300x150")
 
         ttk.Label(dialog, text="Instance name").pack(pady=5)
         name_entry = ttk.Entry(dialog)

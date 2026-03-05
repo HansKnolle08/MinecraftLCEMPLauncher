@@ -37,8 +37,9 @@ import tarfile
 import zipfile
 import os
 import logging
-from pathlib import Path
 from typing import Optional
+from pathlib import Path
+from bs4 import BeautifulSoup
 
 from .paths import PROTON_DIR, INSTALL_DIR, INSTANCES_DIR
 
@@ -50,12 +51,20 @@ VERSIONS_FILE = Path(__file__).parent / "config" / "lcemp_versions.json"
 
 def download_file(url: str, output_path: Path) -> None:
     """
-    Downloads a file from the given URL to the specified output path.
-
-    Args:
-        url (str): The URL to download from.
-        output_path (Path): The path where the file will be saved.
+    Downloads a file from a URL (MediaFire) to the specified output path.
     """
+    if "mediafire.com/file/" in url:
+        logger.info(f"Detected MediaFire page link: {url}")
+        r = requests.get(url, timeout=30)
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, "html.parser")
+        download_button = soup.find("a", id="downloadButton")
+        if download_button:
+            url = download_button["href"]
+            logger.info(f"Resolved MediaFire direct download link: {url}")
+        else:
+            raise ValueError("MediaFire download button not found")
+
     logger.info(f"Starting download from {url}")
     response = requests.get(url, stream=True, timeout=30)
     response.raise_for_status()
