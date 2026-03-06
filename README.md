@@ -13,8 +13,8 @@ A Python-based GUI launcher for managing and running Minecraft LCEMP on Linux wi
 ## Requirements
 ---
 
-- Python 3.7+
-- tkinter (usually included with Python)
+- Python 3.11+
+- tkinter
 - requests library
 - bs4 library
 - Linux-based OS
@@ -23,6 +23,22 @@ A Python-based GUI launcher for managing and running Minecraft LCEMP on Linux wi
 ---
 
 1. Clone or download this repository
+2. Install Libraies:
+
+Ubuntu:
+```bash
+sudo apt update
+sudo apt install python3-tk python3-requests python3-bs4
+```
+Fedora:
+```bash
+sudo dnf update
+sudo dnf install python3-tk python3-requests python3-bs4
+```
+Arch:
+```bash
+sudo pacman -Syu python3-tk python3-requests python3-bs4
+```
 
 ## Usage
 ---
@@ -31,6 +47,10 @@ A Python-based GUI launcher for managing and running Minecraft LCEMP on Linux wi
 
 ```bash
 python src/main.py
+```
+or
+```bash
+python3 src/main.py
 ```
 
 ### Creating an Instance
