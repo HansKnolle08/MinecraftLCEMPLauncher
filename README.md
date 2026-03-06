@@ -23,19 +23,6 @@ A Python-based GUI launcher for managing and running Minecraft LCEMP on Linux wi
 ---
 
 1. Clone or download this repository
-2. Install pyinstaller
-3. Run:
-```bash
-chmod +x build.sh {custom_name}
-```
-5. Run:
-```bash
-chmod +x ./name_of_binary
-```
-6. Run:
-```bash
-./name_of_binary
-```
 
 ## Usage
 ---
