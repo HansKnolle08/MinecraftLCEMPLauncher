@@ -59,12 +59,29 @@ class LauncherGUI:
         self.root.title("LCEMP Launcher")
         self.root.geometry("700x600")
 
+        # Set the window icon from the project root (favicon.ico)
+        self.icon_path = self._find_project_icon()
+        if self.icon_path:
+            try:
+                self.root.iconbitmap(str(self.icon_path))
+            except Exception as e:
+                logger.warning(f"Failed to set window icon: {e}")
+
         self.selected_instance: Optional[str] = None
         self.versions: List[str] = []
 
         self._load_versions()
         self.build_ui()
         self.refresh_instances()
+
+    def _find_project_icon(self) -> Optional[Path]:
+        """Finds the project root favicon.ico and returns its path if it exists."""
+        # gui.py is located in <project>/src/lcemplauncher/gui.py
+        icon_path = Path(__file__).resolve().parents[3] / "favicon.ico"
+        if icon_path.exists():
+            return icon_path
+        logger.warning(f"Project icon not found at {icon_path}")
+        return None
 
     def _load_versions(self) -> None:
         """
@@ -198,6 +215,12 @@ class LauncherGUI:
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to create instance: {str(e)}")
                 logger.error(f"Failed to create instance {name}: {e}")
+
+        if self.icon_path:
+            try:
+                dialog.iconbitmap(str(self.icon_path))
+            except Exception as e:
+                logger.warning(f"Failed to set dialog icon: {e}")
 
         ttk.Button(dialog, text="Create", command=create).pack(pady=10)
 
