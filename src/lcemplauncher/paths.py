@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 # Base directory
-BASE_DIR = Path.home() / ".lcemp_launcher"
+BASE_DIR = Path.home() / ".local" / "share" / "lcemp_launcher"
 
 # Launcher folders
 INSTALL_DIR = BASE_DIR / "install"
