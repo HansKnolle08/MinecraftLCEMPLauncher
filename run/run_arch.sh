@@ -2,7 +2,7 @@
 set -e
 
 # -------------------------------
-# Arch Linux / Manjaro Launcher Runner
+# Arch / Manjaro Launcher Runner
 # -------------------------------
 
 PYTHON_CMD=$(command -v python3 || true)
@@ -13,11 +13,11 @@ fi
 
 if [[ -z "$PYTHON_CMD" ]] || [[ $PYTHON_VER -lt 31 ]]; then
     echo "Installing Python 3.11+ ..."
-    sudo pacman -Syu --noconfirm python python-pip tk
+    sudo pacman -Syu --noconfirm python
     PYTHON_CMD=python3
 fi
 
-sudo pacman -S --noconfirm python-bs4 python-requests tk
+sudo pacman -S --noconfirm tk python-beautifulsoup4 python-requests
 
-echo "Running LCEMP Launcher..."
+echo "Launching LCMPE Launcher..."
 $PYTHON_CMD ../src/main.py
