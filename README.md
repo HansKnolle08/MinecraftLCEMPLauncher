@@ -39,29 +39,36 @@ chmod +x run_{your_os}.sh
 
 ### Creating an Instance
 
-1. Click on the "New Instance" button
-2. Enter a name for your instance
-3. Click "Create"
+1. Click the **"Create Instance"** button in the main window.
+2. Enter a name for the instance and click **"Create"**.
+3. The instance will appear in the list.
+
+### Managing an Instance
+
+1. Select an instance from the list.
+2. Double-click the instance to open the instance detail window.
 
 ### Installing LCEMP
 
-1. Select an instance from the list
-2. Choose a version from the dropdown
-3. Click "Install LCEMP"
+1. In the instance detail window, pick a version from the **"LCEMP Version"** dropdown.
+2. Click **"Download LCEMP"**.
+3. The launcher will download and extract LCEMP into the instance folder.
 
 ### Downloading Proton
 
-Click "Download Proton" to download the default Proton version (8-21) needed to run the game.
+1. On the main Window click on Settings and then you should see the Settings Windows with the Proton Manager inside it
+2. In the Textfield enter the Proton Version you want to download (e.g. 8-32, 9-16, ...) and click on Download. 
+3. The selected Proton version will be downloaded and extracted inside the lcemp_launcher folder
 
 ### Launching a Game
 
-1. Select an instance
-2. Click "Launch" to start the game with Proton
+1. In the instance detail window, select the desired Proton version.
+2. Click **"Launch"** in the instance detail window or **"Launch Instance"** in the main window to start the game using the selected Proton build.
 
 ### Deleting an Instance
 
-1. Select an instance
-2. Click "Delete" and confirm the deletion
+1. In the instance detail window, click **"Delete Instance"**.
+2. Confirm the deletion when prompted.
 
 ## Configuration
 ---

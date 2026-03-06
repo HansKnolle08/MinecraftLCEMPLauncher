@@ -34,27 +34,26 @@ IMPORTS
 import logging
 
 from lcemplauncher.gui import LauncherGUI
+from lcemplauncher.logging_config import setup_logging
 from lcemplauncher.paths import ensure_directories
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+log_file = setup_logging()
 
 """
 MAIN FUNCTION
 """
 def main() -> None:
-    """
-    Main function to start the LCEMP Launcher.
-    """
+    """Main function to start the LCEMP Launcher."""
     logger = logging.getLogger(__name__)
     logger.info("Starting LCEMP Launcher")
+    logger.debug(f"Log file: {log_file}")
 
     try:
         ensure_directories()
         gui = LauncherGUI()
         gui.run()
-    except Exception as e:
-        logger.error(f"Application error: {e}")
+    except Exception:
+        logger.exception("Application error")
         raise
 
 """

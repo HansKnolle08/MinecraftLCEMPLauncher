@@ -38,9 +38,7 @@ import logging
 
 from .paths import INSTANCES_DIR, PROTON_DIR
 
-# Configure logging
 logger = logging.getLogger(__name__)
-
 
 def launch_instance(instance_name: str, proton_version: str = "8-21") -> None:
     """
@@ -73,20 +71,37 @@ def launch_instance(instance_name: str, proton_version: str = "8-21") -> None:
     wineprefix_path = INSTANCES_DIR / instance_name / "wineprefix"
     wineprefix_path.mkdir(parents=True, exist_ok=True)
 
-    logger.info(f"Launching {exe_path} with Proton {proton_version} using prefix {wineprefix_path}")
+    logger.info(
+        "Launching %s with Proton %s using prefix %s",
+        exe_path,
+        proton_version,
+        wineprefix_path,
+    )
 
     # Prepare the Proton command
     cmd = [str(proton_dir / "proton"), "run", str(exe_path)]
+    logger.debug("Proton command: %s", cmd)
 
     # Set environment variables required by Proton
     env = os.environ.copy()
     env["STEAM_COMPAT_DATA_PATH"] = str(wineprefix_path)
     env["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = str(proton_dir)
+    logger.debug("Proton environment vars: STEAM_COMPAT_DATA_PATH=%s, STEAM_COMPAT_CLIENT_INSTALL_PATH=%s", env["STEAM_COMPAT_DATA_PATH"], env["STEAM_COMPAT_CLIENT_INSTALL_PATH"])
 
     # Change to the game directory before launching
+    cwd = os.getcwd()
     os.chdir(game_dir)
 
-    # Launch the game
-    result = subprocess.run(cmd, env=env)
-    if result.returncode != 0:
+    try:
+        result = subprocess.run(cmd, env=env)
+    finally:
+        # Restore original working directory to avoid side effects.
+        os.chdir(cwd)
+
+    # Some Proton/Wine exits return non-zero codes even when the game closes normally.
+    # Treat common non-error exit codes (like 3) as a normal shutdown.
+    if result.returncode != 0 and result.returncode != 3:
+        logger.error("Launch failed with return code %s", result.returncode)
         raise ValueError(f"Launch failed with return code {result.returncode}")
+    elif result.returncode == 3:
+        logger.info("Launch ended with return code 3 (treated as normal exit)")

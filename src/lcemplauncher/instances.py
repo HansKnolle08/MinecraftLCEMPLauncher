@@ -37,7 +37,6 @@ from typing import List
 
 from .paths import INSTANCES_DIR
 
-# Configure logging
 logger = logging.getLogger(__name__)
 
 def list_instances() -> List[str]:
