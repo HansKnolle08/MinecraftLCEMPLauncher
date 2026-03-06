@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -e
+
+# -------------------------------
+# Arch Linux / Manjaro Launcher Runner
+# -------------------------------
+
+PYTHON_CMD=$(command -v python3 || true)
+PYTHON_VER=0
+if [[ -n "$PYTHON_CMD" ]]; then
+    PYTHON_VER=$($PYTHON_CMD -V | awk '{print $2}' | cut -d. -f1,2 | awk -F. '{print $1*10+$2}')
+fi
+
+if [[ -z "$PYTHON_CMD" ]] || [[ $PYTHON_VER -lt 31 ]]; then
+    echo "Installing Python 3.11+ ..."
+    sudo pacman -Syu --noconfirm python python-pip tk
+    PYTHON_CMD=python3
+fi
+
+sudo pacman -S --noconfirm python-bs4 python-requests tk
+
+echo "Running LCEMP Launcher..."
+$PYTHON_CMD ../src/main.py

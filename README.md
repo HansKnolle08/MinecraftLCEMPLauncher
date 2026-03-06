@@ -19,39 +19,23 @@ A Python-based GUI launcher for managing and running Minecraft LCEMP on Linux wi
 - bs4 library
 - Linux-based OS
 
-## Installation
+## Installation and Running
 ---
 
 1. Clone or download this repository
-2. Install Libraies:
-
-Ubuntu:
+2. Move into run/
+3. Choose the correct run_{your_os}.sh for your os
+4. Run
 ```bash
-sudo apt update
-sudo apt install python3-tk python3-requests python3-bs4
+chmod +x run_{your_os}.sh
 ```
-Fedora:
+5. Start the Launcher
 ```bash
-sudo dnf update
-sudo dnf install python3-tk python3-requests python3-bs4
-```
-Arch:
-```bash
-sudo pacman -Syu python3-tk python3-requests python3-bs4
+./run_{your_os}.sh
 ```
 
 ## Usage
 ---
-
-### Running the Launcher
-
-```bash
-python src/main.py
-```
-or
-```bash
-python3 src/main.py
-```
 
 ### Creating an Instance
 
