@@ -23,13 +23,18 @@ A Python-based GUI launcher for managing and running Minecraft LCEMP on Linux wi
 ---
 
 1. Clone or download this repository
-2. Install dependencies using your Distributions package Manager (Provided example is for Fedora Linux)
-
+2. Install pyinstaller
+3. Run:
 ```bash
-   sudo dnf install python3-requests, python3-tkinter
+chmod +x build.sh {custom_name}
 ```
+5. Run:
 ```bash
-   pip install bs4
+chmod +x ./name_of_binary
+```
+6. Run:
+```bash
+./name_of_binary
 ```
 
 ## Usage
