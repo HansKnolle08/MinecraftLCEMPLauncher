@@ -25,19 +25,60 @@ SOFTWARE.
 src/main.py
 
 Main entry point for the LCEMP Launcher application.
-This script initializes the application, sets up logging, and starts the GUI.
+This script initializes the application, sets up logging, and handles the main window.
 """
 
 """
 IMPORTS
 """
 import logging
+import sys
+from PySide6.QtWidgets import QApplication, QMainWindow
 
-from lcemplauncher.gui import LauncherGUI
 from lcemplauncher.logging_config import setup_logging
 from lcemplauncher.paths import ensure_directories
 
+from lcemplauncher.ui.main.ui_form import Ui_LauncherMain
+from lcemplauncher.ui.settings.ui_form import Ui_SettingsMain
+
+
 log_file = setup_logging()
+
+"""
+SETUP UI
+"""
+class LauncherMain(QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.ui = Ui_LauncherMain()
+        self.ui.setupUi(self)
+
+        self.connect_ui()
+
+    def connect_ui(self):
+        self.ui.SettingsButton.clicked.connect(self.open_settings)
+        self.ui.LaunchButtonMain.clicked.connect(self.launch_instance)
+        self.ui.LaunchButtonMain_2.clicked.connect(self.new_instance)
+
+    def new_instance(self):
+        logger = logging.getLogger(__name__)
+        logger.info("Creating new instance")
+        print("New instance button clicked")
+
+    def launch_instance(self):
+        logger = logging.getLogger(__name__)
+        logger.info("Launching instance")
+        print("Launch button clicked")
+
+    def open_settings(self):
+        logger = logging.getLogger(__name__)
+        logger.info("Opening settings")
+
+        self.settings_window = QMainWindow()
+        self.settings_ui = Ui_SettingsMain()
+        self.settings_ui.setupUi(self.settings_window)
+
+        self.settings_window.show()
 
 """
 MAIN FUNCTION
@@ -50,8 +91,10 @@ def main() -> None:
 
     try:
         ensure_directories()
-        gui = LauncherGUI()
-        gui.run()
+        app = QApplication(sys.argv)
+        widget = LauncherMain()
+        widget.show()
+        sys.exit(app.exec())
     except Exception:
         logger.exception("Application error")
         raise
