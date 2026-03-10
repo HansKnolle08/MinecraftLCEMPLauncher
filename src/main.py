@@ -24,7 +24,7 @@ SOFTWARE.
 
 src/main.py
 
-Main entry point for the LCEMP Launcher application.
+Main entry point for the LCEMP Launcher.
 This script initializes the application, sets up logging, and handles the main window.
 """
 
@@ -33,78 +33,70 @@ IMPORTS
 """
 
 # Standard library imports
-import logging
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow
 import json
+import threading
 
 # Local imports
-from lcemplauncher.logging_config import setup_logging
 from lcemplauncher.paths import *
 from lcemplauncher.launcher import launch_instance
+from lcemplauncher.instances import load_instance_config
 
 # UI imports
 from lcemplauncher.ui.main.ui_form import Ui_LauncherMain
 from lcemplauncher.ui.settings.ui_form import Ui_SettingsMain
 from lcemplauncher.ui.dialog.ui_form import Ui_NewInstanceMain
 
-# Setup logging
-log_file = setup_logging()
-
 """
-SETUP UI
+LAUNCHER MAIN WINDOW
 """
 class LauncherMain(QMainWindow):
-    """Main window for the LCEMP Launcher"""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_LauncherMain()
         self.ui.setupUi(self)
 
         self.connect_ui()
-        self.load_instances()
-        self.load_users()
+        self._load_instances()
+        self._load_users()
+
+        self.ui.InstanceSettingsFrame.hide()
 
     # Connect UI signals to logic
     def connect_ui(self):
-        self.ui.SettingsButton.clicked.connect(self.open_settings_button)
-        self.ui.LaunchButtonMain.clicked.connect(self.launch_instance_button)
-        self.ui.LaunchButtonMain_2.clicked.connect(self.new_instance_button)
+        self.ui.SettingsButton.clicked.connect(self._open_settings_button)
+        self.ui.LaunchButton.clicked.connect(self._launch_instance_button)
+        self.ui.NewInstanceButton.clicked.connect(self._new_instance_button)
+        self.ui.InstanceList.currentItemChanged.connect(self._instance_selected)
 
     # UI button handlers
-    def new_instance_button(self):
-        logger = logging.getLogger(__name__)
-        logger.info("Creating new instance")
-        
+    def _new_instance_button(self):
         self.new_instance_dialog = QMainWindow()
         self.new_instance_ui = Ui_NewInstanceMain()
         self.new_instance_ui.setupUi(self.new_instance_dialog)
 
         self.new_instance_dialog.show()
 
-    def launch_instance_button(self):
-        logger = logging.getLogger(__name__)
-        logger.info("Launching instance")
-
+    def _launch_instance_button(self):
         item = self.ui.InstanceList.currentItem()
+        username = self.ui.UserSelectBox.currentText()
+        ip_address = "192.168.1.99"
 
         if item is None:
-            logger.warning("No instance selected")
             return
 
         instance_name = item.text()
+        proton_version = self.ui.ProtonSelectBox.currentText().replace("GE-Proton", "")
 
-        # Currently hardcoded, will be selectable in the future
-        proton_version = "10-25"
+        thread = threading.Thread(
+            target=launch_instance,
+            args=(instance_name, username, ip_address, proton_version),
+            daemon=True
+        )
+        thread.start()
 
-        logger.info(f"Launching instance: {instance_name} with Proton {proton_version}")
-
-        launch_instance(instance_name, proton_version)
-
-    def open_settings_button(self):
-        logger = logging.getLogger(__name__)
-        logger.info("Opening settings")
-
+    def _open_settings_button(self):
         self.settings_window = QMainWindow()
         self.settings_ui = Ui_SettingsMain()
         self.settings_ui.setupUi(self.settings_window)
@@ -112,10 +104,7 @@ class LauncherMain(QMainWindow):
         self.settings_window.show()
 
     # Load instances from the instances directory and show them in the UI list
-    def load_instances(self):
-        logger = logging.getLogger(__name__)
-        logger.info("Loading instances")
-
+    def _load_instances(self):
         self.ui.InstanceList.clear()
 
         if not INSTANCES_DIR.exists():
@@ -125,11 +114,30 @@ class LauncherMain(QMainWindow):
             if instance.is_dir():
                 self.ui.InstanceList.addItem(instance.name)
 
-    def load_users(self):
-        logger = logging.getLogger(__name__)
-        logger.info("Loading users")
+    def _instance_selected(self, item):
+        if item is None:
+            return
+        
+        self.ui.InstanceSettingsFrame.show()
 
-        self.ui.comboBox.clear()
+        name = item.text()
+
+        config = load_instance_config(name)
+
+        self.ui.InstanceName.setText(config["Name"])
+        self.ui.IPAddressInput.setText(config["IPAddress"] or "")
+
+        self.ui.ProtonSelectBox.clear()
+        for ver in self._list_proton_versions():
+            if not ver == "downloading":
+                self.ui.ProtonSelectBox.addItem(ver)
+
+        playtime = config["Playtime"] or "0d 0h 0m"
+        self.ui.PlaytimeLabel.setText(f"Playtime: {playtime}")
+
+    # Load users from the users.json file and show them in the UI combo box
+    def _load_users(self):
+        self.ui.UserSelectBox.clear()
 
         try:
             with open(USER_DIR / "users.json", "r") as f:
@@ -137,31 +145,30 @@ class LauncherMain(QMainWindow):
 
             users = data.get("Users", {})
 
-            for user_id, user_data in users.items():
+            for _user_id, user_data in users.items():
                 username = user_data.get("Username", "Unknown")
-                self.ui.comboBox.addItem(username)
+                self.ui.UserSelectBox.addItem(username)
 
         except Exception:
-            logger.exception("Failed to load users")
+            print("Failed to load users.json")
+
+    @staticmethod
+    def _list_proton_versions():
+        if not PROTON_DIR.exists():
+            PROTON_DIR.mkdir(parents=True)
+        return [p.name for p in PROTON_DIR.iterdir() if p.is_dir()]
 
 """
 MAIN FUNCTION
 """
 def main() -> None:
-    """Main function to start the LCEMP Launcher."""
-    logger = logging.getLogger(__name__)
-    logger.info("Starting LCEMP Launcher")
-    logger.debug(f"Log file: {log_file}")
-
     try:
         ensure_directories()
-        initiate_json_configs()
         app = QApplication(sys.argv)
         widget = LauncherMain()
         widget.show()
         sys.exit(app.exec())
     except Exception:
-        logger.exception("Application error")
         raise
 
 """

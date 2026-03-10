@@ -25,7 +25,7 @@
   <property name="font">
    <font>
     <family>Sans Serif</family>
-    <pointsize>11</pointsize>
+    <pointsize>10</pointsize>
     <bold>false</bold>
    </font>
   </property>
@@ -37,28 +37,36 @@
     background-color: #2b2b2b;
 }
 
+QLabel {
+	color: white;
+}
+
 QPushButton {
-    background-color: #3c3f41;
-    color: white;
+    background-color: rgb(20, 150, 8);
+	color: white;
+    font-weight: bold;
     border-radius: 6px;
     padding: 6px;
 }
 
 QPushButton:hover {
-    background-color: #4b4f52;
+   background-color: rgb(20, 195, 8);
 }
 
-#SettingsButton:hover {
-    background-color: #4b4f52;
+QPushButton:pressed {
+	background-color: rgb(20, 250, 8);
 }
 
-#LaunchButtonMain {
-    background-color: #3daee9;
-    font-weight: bold;
+#DeleteInstanceButton {
+	background-color: rgb(224, 27, 36);
 }
 
-#LaunchButtonMain:hover {
-    background-color: #52b6eb;
+#DeleteInstanceButton:hover {
+	background-color: rgb(242, 99, 99);
+}
+
+#DeleteInstanceButton:pressed {
+	background-color: rgb(255, 120, 120)
 }
 
 QListWidget {
@@ -91,13 +99,13 @@ QComboBox QAbstractItemView {
    <enum>QTabWidget::TabShape::Rounded</enum>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="LaunchButtonMain">
+   <widget class="QPushButton" name="LaunchButton">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>500</y>
-      <width>300</width>
-      <height>70</height>
+      <x>300</x>
+      <y>510</y>
+      <width>320</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="font">
@@ -108,7 +116,7 @@ QComboBox QAbstractItemView {
      </font>
     </property>
     <property name="text">
-     <string>Launch</string>
+     <string>Launch Instance</string>
     </property>
    </widget>
    <widget class="QListWidget" name="InstanceList">
@@ -117,7 +125,7 @@ QComboBox QAbstractItemView {
       <x>20</x>
       <y>10</y>
       <width>251</width>
-      <height>491</height>
+      <height>490</height>
      </rect>
     </property>
     <property name="font">
@@ -151,15 +159,16 @@ QComboBox QAbstractItemView {
     <property name="geometry">
      <rect>
       <x>1110</x>
-      <y>500</y>
-      <width>70</width>
-      <height>70</height>
+      <y>510</y>
+      <width>60</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Sans Serif</family>
       <pointsize>25</pointsize>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -176,13 +185,13 @@ QComboBox QAbstractItemView {
      </size>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBox">
+   <widget class="QComboBox" name="UserSelectBox">
     <property name="geometry">
      <rect>
-      <x>1010</x>
+      <x>1000</x>
       <y>10</y>
-      <width>171</width>
-      <height>31</height>
+      <width>170</width>
+      <height>30</height>
      </rect>
     </property>
     <property name="font">
@@ -205,25 +214,203 @@ QComboBox QAbstractItemView {
      </property>
     </item>
    </widget>
-   <widget class="QPushButton" name="LaunchButtonMain_2">
+   <widget class="QPushButton" name="NewInstanceButton">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>509</y>
-      <width>251</width>
-      <height>61</height>
+      <y>510</y>
+      <width>250</width>
+      <height>60</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Sans Serif</family>
       <pointsize>23</pointsize>
-      <bold>false</bold>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
      <string>New Instance</string>
     </property>
+   </widget>
+   <widget class="QFrame" name="InstanceSettingsFrame">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>10</y>
+      <width>320</width>
+      <height>490</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
+    </property>
+    <widget class="QLabel" name="InstanceName">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>601</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Sans Serif</family>
+       <pointsize>25</pointsize>
+       <italic>false</italic>
+       <bold>true</bold>
+       <underline>true</underline>
+      </font>
+     </property>
+     <property name="text">
+      <string>LCEMP 1.0.3</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="PlaytimeLabel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>271</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Sans Serif</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Playtime: 0d 0h 0m</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="DeleteInstanceButton">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>450</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Delete Instance</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="OpenFolderButton">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>450</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Open Folder</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="ProtonSelectBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>170</y>
+       <width>200</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Sans Serif</family>
+       <pointsize>15</pointsize>
+       <italic>false</italic>
+       <bold>false</bold>
+       <kerning>true</kerning>
+      </font>
+     </property>
+     <item>
+      <property name="text">
+       <string>GE-Proton 8-21</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>GE-Proton 10-32</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="ProtonLabel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>130</y>
+       <width>140</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Sans Serif</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Proton Version:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="IPAddress">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>220</y>
+       <width>140</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Sans Serif</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>IP Address</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="IPAddressInput">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>270</y>
+       <width>200</width>
+       <height>30</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

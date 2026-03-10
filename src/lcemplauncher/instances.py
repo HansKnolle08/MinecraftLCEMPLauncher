@@ -31,37 +31,52 @@ This module provides functions to list, create, and delete instances.
 """
 IMPORTS
 """
+
+# Standard library imports
 import shutil
-import logging
 from typing import List
+import json
 
-from .paths import INSTANCES_DIR
+# Local imports
+from .paths import INSTANCES_DIR, INTERNAL_CONFIG_DIR
 
-logger = logging.getLogger(__name__)
-
+# Lists all instances and returns their names as a list of strings.
 def list_instances() -> List[str]:
-    """
-    Lists all instances.
-
-    Returns:
-        List[str]: A list of instance names.
-    """
     if not INSTANCES_DIR.exists():
         INSTANCES_DIR.mkdir(parents=True)
-        logger.info(f"Created instances directory: {INSTANCES_DIR}")
 
     return [p.name for p in INSTANCES_DIR.iterdir() if p.is_dir()]
 
+# Creates a new instance with the given name. It creates a new directory for the instance and copies a template configuration file into it.
 def create_instance(name: str) -> None:
-    """
-    Creates a new instance.
-
-    Args:
-        name (str): The name of the instance.
-    """
     path = INSTANCES_DIR / name
     path.mkdir(parents=True, exist_ok=True)
-    logger.info(f"Created instance: {name}")
+
+    template = INTERNAL_CONFIG_DIR / "instance.json"
+    target = path / "instance.json"
+
+    if not target.exists():
+        shutil.copy(template, target)
+
+        with open(target, "r") as f:
+            data = json.load(f)
+
+        data["instance"]["Name"] = name
+
+        with open(target, "w") as f:
+            json.dump(data, f, indent=4)
+
+# Loads the configuration of an instance and returns it as a dictionary. It reads the instance.json file from the instance's directory.
+def load_instance_config(name: str) -> dict:
+    config_path = INSTANCES_DIR / name / "instance.json"
+
+    if not config_path.exists():
+        raise ValueError("Instance config missing")
+
+    with open(config_path, "r") as f:
+        data = json.load(f)
+
+    return data["instance"]
 
 def delete_instance(name: str) -> None:
     """
@@ -73,6 +88,5 @@ def delete_instance(name: str) -> None:
     path = INSTANCES_DIR / name
     if path.exists():
         shutil.rmtree(path)
-        logger.info(f"Deleted instance: {name}")
     else:
-        logger.warning(f"Instance {name} does not exist")
+        print(f"Instance '{name}' does not exist.")

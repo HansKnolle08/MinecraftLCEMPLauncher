@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QListWidget, QListWidgetItem,
-    QMainWindow, QMenuBar, QPushButton, QSizePolicy,
-    QTabWidget, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QLabel,
+    QLineEdit, QListWidget, QListWidgetItem, QMainWindow,
+    QMenuBar, QPushButton, QSizePolicy, QTabWidget,
+    QWidget)
 
 class Ui_LauncherMain(object):
     def setupUi(self, LauncherMain):
@@ -28,35 +29,43 @@ class Ui_LauncherMain(object):
         LauncherMain.setMaximumSize(QSize(1200, 600))
         font = QFont()
         font.setFamilies([u"Sans Serif"])
-        font.setPointSize(11)
+        font.setPointSize(10)
         font.setBold(False)
         LauncherMain.setFont(font)
         LauncherMain.setStyleSheet(u"QMainWindow {\n"
 "    background-color: #2b2b2b;\n"
 "}\n"
 "\n"
+"QLabel {\n"
+"	color: white;\n"
+"}\n"
+"\n"
 "QPushButton {\n"
-"    background-color: #3c3f41;\n"
-"    color: white;\n"
+"    background-color: rgb(20, 150, 8);\n"
+"	color: white;\n"
+"    font-weight: bold;\n"
 "    border-radius: 6px;\n"
 "    padding: 6px;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
-"    background-color: #4b4f52;\n"
+"   background-color: rgb(20, 195, 8);\n"
 "}\n"
 "\n"
-"#SettingsButton:hover {\n"
-"    background-color: #4b4f52;\n"
+"QPushButton:pressed {\n"
+"	background-color: rgb(20, 250, 8);\n"
 "}\n"
 "\n"
-"#LaunchButtonMain {\n"
-"    background-color: #3daee9;\n"
-"    font-weight: bold;\n"
+"#DeleteInstanceButton {\n"
+"	background-color: rgb(224, 27, 36);\n"
 "}\n"
 "\n"
-"#LaunchButtonMain:hover {\n"
-"    background-color: #52b6eb;\n"
+"#DeleteInstanceButton:hover {\n"
+"	background-color: rgb(242, 99, 99);\n"
+"}\n"
+"\n"
+"#DeleteInstanceButton:pressed {\n"
+"	background-color: rgb(255, 120, 120)\n"
 "}\n"
 "\n"
 "QListWidget {\n"
@@ -77,7 +86,8 @@ class Ui_LauncherMain(object):
 "    background-color: #3c3f41;\n"
 "    color: white;\n"
 "    padding: 5px;\n"
-"}\n"
+""
+                        "}\n"
 "\n"
 "QComboBox QAbstractItemView {\n"
 "    background-color: #3c3f41;\n"
@@ -87,56 +97,103 @@ class Ui_LauncherMain(object):
         LauncherMain.setTabShape(QTabWidget.TabShape.Rounded)
         self.centralwidget = QWidget(LauncherMain)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.LaunchButtonMain = QPushButton(self.centralwidget)
-        self.LaunchButtonMain.setObjectName(u"LaunchButtonMain")
-        self.LaunchButtonMain.setGeometry(QRect(510, 500, 300, 70))
+        self.LaunchButton = QPushButton(self.centralwidget)
+        self.LaunchButton.setObjectName(u"LaunchButton")
+        self.LaunchButton.setGeometry(QRect(300, 510, 320, 60))
         font1 = QFont()
         font1.setFamilies([u"Sans Serif"])
         font1.setPointSize(25)
         font1.setBold(True)
-        self.LaunchButtonMain.setFont(font1)
+        self.LaunchButton.setFont(font1)
         self.InstanceList = QListWidget(self.centralwidget)
         QListWidgetItem(self.InstanceList)
         QListWidgetItem(self.InstanceList)
         QListWidgetItem(self.InstanceList)
         QListWidgetItem(self.InstanceList)
         self.InstanceList.setObjectName(u"InstanceList")
-        self.InstanceList.setGeometry(QRect(20, 10, 251, 491))
+        self.InstanceList.setGeometry(QRect(20, 10, 251, 490))
         font2 = QFont()
         font2.setFamilies([u"Sans Serif"])
         font2.setPointSize(16)
         self.InstanceList.setFont(font2)
         self.SettingsButton = QPushButton(self.centralwidget)
         self.SettingsButton.setObjectName(u"SettingsButton")
-        self.SettingsButton.setGeometry(QRect(1110, 500, 70, 70))
-        font3 = QFont()
-        font3.setFamilies([u"Sans Serif"])
-        font3.setPointSize(25)
-        self.SettingsButton.setFont(font3)
+        self.SettingsButton.setGeometry(QRect(1110, 510, 60, 60))
+        self.SettingsButton.setFont(font1)
         icon = QIcon()
         icon.addFile(u"src/lcemplauncher/res/img/icons/settings_icon.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.SettingsButton.setIcon(icon)
         self.SettingsButton.setIconSize(QSize(48, 48))
-        self.comboBox = QComboBox(self.centralwidget)
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.setObjectName(u"comboBox")
-        self.comboBox.setGeometry(QRect(1010, 10, 171, 31))
+        self.UserSelectBox = QComboBox(self.centralwidget)
+        self.UserSelectBox.addItem("")
+        self.UserSelectBox.addItem("")
+        self.UserSelectBox.setObjectName(u"UserSelectBox")
+        self.UserSelectBox.setGeometry(QRect(1000, 10, 170, 30))
+        font3 = QFont()
+        font3.setFamilies([u"Sans Serif"])
+        font3.setPointSize(15)
+        font3.setBold(False)
+        font3.setItalic(False)
+        font3.setKerning(True)
+        self.UserSelectBox.setFont(font3)
+        self.NewInstanceButton = QPushButton(self.centralwidget)
+        self.NewInstanceButton.setObjectName(u"NewInstanceButton")
+        self.NewInstanceButton.setGeometry(QRect(20, 510, 250, 60))
         font4 = QFont()
         font4.setFamilies([u"Sans Serif"])
-        font4.setPointSize(15)
-        font4.setBold(False)
-        font4.setItalic(False)
-        font4.setKerning(True)
-        self.comboBox.setFont(font4)
-        self.LaunchButtonMain_2 = QPushButton(self.centralwidget)
-        self.LaunchButtonMain_2.setObjectName(u"LaunchButtonMain_2")
-        self.LaunchButtonMain_2.setGeometry(QRect(20, 509, 251, 61))
+        font4.setPointSize(23)
+        font4.setBold(True)
+        self.NewInstanceButton.setFont(font4)
+        self.InstanceSettingsFrame = QFrame(self.centralwidget)
+        self.InstanceSettingsFrame.setObjectName(u"InstanceSettingsFrame")
+        self.InstanceSettingsFrame.setEnabled(True)
+        self.InstanceSettingsFrame.setGeometry(QRect(300, 10, 320, 490))
+        self.InstanceSettingsFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.InstanceSettingsFrame.setFrameShadow(QFrame.Shadow.Raised)
+        self.InstanceName = QLabel(self.InstanceSettingsFrame)
+        self.InstanceName.setObjectName(u"InstanceName")
+        self.InstanceName.setGeometry(QRect(10, 0, 601, 51))
         font5 = QFont()
         font5.setFamilies([u"Sans Serif"])
-        font5.setPointSize(23)
-        font5.setBold(False)
-        self.LaunchButtonMain_2.setFont(font5)
+        font5.setPointSize(25)
+        font5.setBold(True)
+        font5.setItalic(False)
+        font5.setUnderline(True)
+        self.InstanceName.setFont(font5)
+        self.PlaytimeLabel = QLabel(self.InstanceSettingsFrame)
+        self.PlaytimeLabel.setObjectName(u"PlaytimeLabel")
+        self.PlaytimeLabel.setGeometry(QRect(10, 60, 271, 21))
+        font6 = QFont()
+        font6.setFamilies([u"Sans Serif"])
+        font6.setPointSize(14)
+        self.PlaytimeLabel.setFont(font6)
+        self.DeleteInstanceButton = QPushButton(self.InstanceSettingsFrame)
+        self.DeleteInstanceButton.setObjectName(u"DeleteInstanceButton")
+        self.DeleteInstanceButton.setEnabled(True)
+        self.DeleteInstanceButton.setGeometry(QRect(10, 450, 131, 31))
+        self.DeleteInstanceButton.setAutoDefault(False)
+        self.DeleteInstanceButton.setFlat(False)
+        self.OpenFolderButton = QPushButton(self.InstanceSettingsFrame)
+        self.OpenFolderButton.setObjectName(u"OpenFolderButton")
+        self.OpenFolderButton.setGeometry(QRect(180, 450, 131, 31))
+        self.OpenFolderButton.setAutoDefault(False)
+        self.ProtonSelectBox = QComboBox(self.InstanceSettingsFrame)
+        self.ProtonSelectBox.addItem("")
+        self.ProtonSelectBox.addItem("")
+        self.ProtonSelectBox.setObjectName(u"ProtonSelectBox")
+        self.ProtonSelectBox.setGeometry(QRect(10, 170, 200, 30))
+        self.ProtonSelectBox.setFont(font3)
+        self.ProtonLabel = QLabel(self.InstanceSettingsFrame)
+        self.ProtonLabel.setObjectName(u"ProtonLabel")
+        self.ProtonLabel.setGeometry(QRect(10, 130, 140, 40))
+        self.ProtonLabel.setFont(font6)
+        self.IPAddress = QLabel(self.InstanceSettingsFrame)
+        self.IPAddress.setObjectName(u"IPAddress")
+        self.IPAddress.setGeometry(QRect(10, 220, 140, 40))
+        self.IPAddress.setFont(font6)
+        self.IPAddressInput = QLineEdit(self.InstanceSettingsFrame)
+        self.IPAddressInput.setObjectName(u"IPAddressInput")
+        self.IPAddressInput.setGeometry(QRect(10, 270, 200, 30))
         LauncherMain.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(LauncherMain)
         self.menubar.setObjectName(u"menubar")
@@ -145,12 +202,15 @@ class Ui_LauncherMain(object):
 
         self.retranslateUi(LauncherMain)
 
+        self.DeleteInstanceButton.setDefault(False)
+
+
         QMetaObject.connectSlotsByName(LauncherMain)
     # setupUi
 
     def retranslateUi(self, LauncherMain):
         LauncherMain.setWindowTitle(QCoreApplication.translate("LauncherMain", u"Legacy Launcher for Linux", None))
-        self.LaunchButtonMain.setText(QCoreApplication.translate("LauncherMain", u"Launch", None))
+        self.LaunchButton.setText(QCoreApplication.translate("LauncherMain", u"Launch Instance", None))
 
         __sortingEnabled = self.InstanceList.isSortingEnabled()
         self.InstanceList.setSortingEnabled(False)
@@ -165,9 +225,18 @@ class Ui_LauncherMain(object):
         self.InstanceList.setSortingEnabled(__sortingEnabled)
 
         self.SettingsButton.setText("")
-        self.comboBox.setItemText(0, QCoreApplication.translate("LauncherMain", u"PalpatineGHG", None))
-        self.comboBox.setItemText(1, QCoreApplication.translate("LauncherMain", u"ChrisiGHG", None))
+        self.UserSelectBox.setItemText(0, QCoreApplication.translate("LauncherMain", u"PalpatineGHG", None))
+        self.UserSelectBox.setItemText(1, QCoreApplication.translate("LauncherMain", u"ChrisiGHG", None))
 
-        self.LaunchButtonMain_2.setText(QCoreApplication.translate("LauncherMain", u"New Instance", None))
+        self.NewInstanceButton.setText(QCoreApplication.translate("LauncherMain", u"New Instance", None))
+        self.InstanceName.setText(QCoreApplication.translate("LauncherMain", u"LCEMP 1.0.3", None))
+        self.PlaytimeLabel.setText(QCoreApplication.translate("LauncherMain", u"Playtime: 0d 0h 0m", None))
+        self.DeleteInstanceButton.setText(QCoreApplication.translate("LauncherMain", u"Delete Instance", None))
+        self.OpenFolderButton.setText(QCoreApplication.translate("LauncherMain", u"Open Folder", None))
+        self.ProtonSelectBox.setItemText(0, QCoreApplication.translate("LauncherMain", u"GE-Proton 8-21", None))
+        self.ProtonSelectBox.setItemText(1, QCoreApplication.translate("LauncherMain", u"GE-Proton 10-32", None))
+
+        self.ProtonLabel.setText(QCoreApplication.translate("LauncherMain", u"Proton Version:", None))
+        self.IPAddress.setText(QCoreApplication.translate("LauncherMain", u"IP Address", None))
     # retranslateUi
 

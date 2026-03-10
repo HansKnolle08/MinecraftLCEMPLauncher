@@ -24,84 +24,83 @@ SOFTWARE.
 
 src/lcemplauncher/launcher.py
 
-Launcher functions for the LCEMP Launcher application.
-This module provides the main functions to launch the game using Proton, as well as 
-helper functions for downloading and installing LCEMP and Proton.
+Launcher functions for the LCEMP Launcher.
+Handles starting LCEMP instances through Proton.
 """
 
 """
 IMPORTS
 """
+
+# Standard library imports
 import subprocess
 import os
-import logging
+from pathlib import Path
 
+# Local imports
 from .paths import INSTANCES_DIR, PROTON_DIR
 
-logger = logging.getLogger(__name__)
+# Finds the Minecraft.Cient.exe in the given game directory
+def _find_executable(game_dir: Path) -> Path:
+    # Searches specifically for Minecraft.Client.exe, to prevent executing malicious files that may be present in the game directory
+    exe_files = list(game_dir.glob("Minecraft.Client.exe"))
 
-def launch_instance(instance_name: str, proton_version: str = "8-21") -> None:
-    """
-    Launches the LCEMP game for the specified instance using Proton.
-
-    Args:
-        instance_name (str): The name of the instance to launch.
-        proton_version (str): The Proton version to use (default: "8-21").
-
-    Raises:
-        ValueError: If the game is not installed, Proton is not downloaded, or no executable is found.
-        subprocess.CalledProcessError: If the launch command fails.
-    """
-    game_dir = INSTANCES_DIR / instance_name / "game"
-    if not game_dir.exists():
-        raise ValueError("Game not installed for this instance")
-
-    proton_dir = PROTON_DIR / f"GE-Proton{proton_version}"
-    if not proton_dir.exists():
-        raise ValueError(f"Proton {proton_version} not downloaded")
-
-    # Find the executable file
-    exe_files = list(game_dir.glob("*.exe"))
     if not exe_files:
-        raise ValueError("No executable found in game directory")
+        raise ValueError("Minecraft.Client.exe not found in game directory")
 
-    exe_path = exe_files[0]  # Use the first .exe file found
+    return exe_files[0]
 
-    # Set up Wine prefix for this instance
-    wineprefix_path = INSTANCES_DIR / instance_name / "wineprefix"
-    wineprefix_path.mkdir(parents=True, exist_ok=True)
+# Prepares environment variables for Proton
+def _prepare_environment(wineprefix_path: Path, proton_dir: Path) -> dict:
+    env = os.environ.copy() # Copy of the current environment
 
-    logger.info(
-        "Launching %s with Proton %s using prefix %s",
-        exe_path,
-        proton_version,
-        wineprefix_path,
-    )
-
-    # Prepare the Proton command
-    cmd = [str(proton_dir / "proton"), "run", str(exe_path)]
-    logger.debug("Proton command: %s", cmd)
-
-    # Set environment variables required by Proton
-    env = os.environ.copy()
+    # Set Proton-specific environment variables
     env["STEAM_COMPAT_DATA_PATH"] = str(wineprefix_path)
     env["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = str(proton_dir)
-    logger.debug("Proton environment vars: STEAM_COMPAT_DATA_PATH=%s, STEAM_COMPAT_CLIENT_INSTALL_PATH=%s", env["STEAM_COMPAT_DATA_PATH"], env["STEAM_COMPAT_CLIENT_INSTALL_PATH"])
 
-    # Change to the game directory before launching
-    cwd = os.getcwd()
-    os.chdir(game_dir)
+    return env
 
-    try:
-        result = subprocess.run(cmd, env=env)
-    finally:
-        # Restore original working directory to avoid side effects.
-        os.chdir(cwd)
+# Launches the specified instance with the given player name and Proton version
+def launch_instance(instance_name: str, player_name: str, ip_address: str, proton_version: str = "8-21") -> subprocess.Popen:
+    # Preparing directories and paths
+    instance_dir = INSTANCES_DIR / instance_name
+    game_dir = instance_dir / "game"
 
-    # Some Proton/Wine exits return non-zero codes even when the game closes normally.
-    # Treat common non-error exit codes (like 3) as a normal shutdown.
-    if result.returncode != 0 and result.returncode != 3:
-        logger.error("Launch failed with return code %s", result.returncode)
-        raise ValueError(f"Launch failed with return code {result.returncode}")
-    elif result.returncode == 3:
-        logger.info("Launch ended with return code 3 (treated as normal exit)")
+    if not game_dir.exists():
+        raise ValueError(f"Game not installed for instance: {instance_name}")
+
+    # Proton directory
+    proton_dir = PROTON_DIR / f"GE-Proton{proton_version}"
+
+    if not proton_dir.exists():
+        raise ValueError(f"Proton {proton_version} not installed")
+
+    # Find executable
+    exe_path = _find_executable(game_dir)
+
+    # Wine prefix
+    wineprefix_path = instance_dir / "wineprefix"
+    wineprefix_path.mkdir(parents=True, exist_ok=True)
+
+    # Proton command
+    cmd = [
+        str(proton_dir / "proton"),
+        "run",
+        str(exe_path),
+        "-name",
+        player_name,
+        "-ip",
+        ip_address
+    ]
+
+    # Environment
+    env = _prepare_environment(wineprefix_path, proton_dir)
+
+    # Launch game
+    process = subprocess.Popen(
+        cmd,
+        cwd=game_dir,
+        env=env
+    )
+
+    return process

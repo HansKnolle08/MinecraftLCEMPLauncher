@@ -26,7 +26,7 @@ src/lcemplauncher/paths.py
 
 This module defines the directory structure and paths used by the LCEMP Launcher. 
 It sets up the base directory in the user's home folder and defines subdirectories for 
-installations, instances, Proton versions, configuration, and logs. 
+installations, instances, Proton versions, configuration, and users. 
 """
 
 """
@@ -34,7 +34,6 @@ IMPORTS
 """
 
 # Standard library imports
-import logging
 from pathlib import Path
 import shutil
 
@@ -50,22 +49,21 @@ INSTANCES_DIR = BASE_DIR / "instances" # Directory where all instances are store
 PROTON_DIR = BASE_DIR / "proton" # Directory where all Proton versions are stored, each version gets its own subdirectory
 CONFIG_DIR = BASE_DIR / "config" # Directory for configuration files, currently not in use
 USER_DIR = BASE_DIR / "user" # Directory for user-specific data
-LOG_DIR = BASE_DIR / "logs" # Directory for log files
 
-# Logger setup
-logger = logging.getLogger(__name__)
-
-# Ensure all necessary directories exist
+# Ensure all necessary directories exist and create them if they don't
 def ensure_directories():
-    for path in [BASE_DIR, INSTALL_DIR, INSTANCES_DIR, PROTON_DIR, CONFIG_DIR, USER_DIR, LOG_DIR]:
+    for path in [BASE_DIR, INSTALL_DIR, INSTANCES_DIR, PROTON_DIR, CONFIG_DIR, USER_DIR]:
         if not path.exists():
             path.mkdir(parents=True, exist_ok=True)
-            logger.debug("Created directory: %s", path)
+    
+    # Initialize JSON config files if they don't exist
+    if USER_DIR.exists() and not (USER_DIR / "users.json").exists():
+        _initiate_json_configs()
 
 # Initialize JSON config files if they don't exist
-def initiate_json_configs():
-    template_users = INTERNAL_CONFIG_DIR / "users.json"
+def _initiate_json_configs():
+    users_config = INTERNAL_CONFIG_DIR / "users.json"
+    users_target = USER_DIR / "users.json"
 
-    if not USER_DIR.exists():
-        shutil.copy(template_users, USER_DIR / "users.json")
-        logger.debug("Created users.json from template: %s", USER_DIR / "users.json")
+    if not users_target.exists():
+        shutil.copy(users_config, users_target)
